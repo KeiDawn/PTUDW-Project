@@ -3,87 +3,123 @@ const jwt = require('jsonwebtoken');
 const getJwtConfig = require('../config/jwt');
 const userModel = require('../models/user.model');
 const { validateRegister } = require('../validators/auth.validator');
+const {
+  successResponse,
+  errorResponse
+} = require('../utils/response');
 
+/**
+ * POST /auth/register
+ */
 const register = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const { isValid, errors } = validateRegister({ email, password });
-  if (!isValid) {
-    return res.status(400).json({
-      success: false,
-      message: 'Validation error',
-      errors
+    // Validate input
+    const { isValid, errors } = validateRegister({ email, password });
+    if (!isValid) {
+      return errorResponse(res, {
+        statusCode: 400,
+        message: 'Validation error',
+        errors
+      });
+    }
+
+    // Check email exists
+    const existingUser = await userModel.findByEmail(email);
+    if (existingUser) {
+      return errorResponse(res, {
+        statusCode: 400,
+        message: 'Email is not available'
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
+    await userModel.createUser({
+      email,
+      password: hashedPassword,
+      role: 'client',
+      is_active: true
+    });
+
+    return successResponse(res, {
+      statusCode: 201,
+      message: 'Register successful'
+    });
+  } catch (err) {
+    console.error('Register error:', err);
+    return errorResponse(res, {
+      statusCode: 500,
+      message: 'Internal server error'
     });
   }
-
-  const existingUser = await userModel.findByEmail(email);
-  if (existingUser) {
-    return res.status(400).json({
-      success: false,
-      message: 'Email is not available'
-    });
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  await userModel.createUser({
-    email,
-    password: hashedPassword,
-    role: 'client',
-    is_active: true
-  });
-
-  return res.json({
-    success: true,
-    message: 'Register successful'
-  });
 };
 
+/**
+ * POST /auth/login
+ */
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await userModel.findByEmail(email);
-  if (!user) {
-    return res.status(401).json({
-      success: false,
-      message: 'Invalid email or password'
-    });
-  }
-
-  if (!user.is_active) {
-    return res.status(403).json({
-      success: false,
-      message: 'Account is disabled'
-    });
-  }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(401).json({
-      success: false,
-      message: 'Invalid email or password'
-    });
-  }
-
-  const jwtConfig = getJwtConfig();
-  const token = jwt.sign(
-    {
-      user_id: user.id,
-      role: user.role
-    },
-    jwtConfig.secret,
-    { expiresIn: jwtConfig.expiresIn }
-  );
-
-  return res.json({
-    success: true,
-    token,
-    user: {
-      id: user.id,
-      email: user.email,
-      role: user.role
+    // Check user exists
+    const user = await userModel.findByEmail(email);
+    if (!user) {
+      return errorResponse(res, {
+        statusCode: 401,
+        message: 'Invalid email or password'
+      });
     }
-  });
+
+    // Check active
+    if (!user.is_active) {
+      return errorResponse(res, {
+        statusCode: 403,
+        message: 'Account is disabled'
+      });
+    }
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return errorResponse(res, {
+        statusCode: 401,
+        message: 'Invalid email or password'
+      });
+    }
+
+    // Generate token
+    const jwtConfig = getJwtConfig();
+    const token = jwt.sign(
+      {
+        user_id: user.id,
+        role: user.role
+      },
+      jwtConfig.secret,
+      { expiresIn: jwtConfig.expiresIn }
+    );
+
+    return successResponse(res, {
+      message: 'Login successful',
+      data: {
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role
+        }
+      }
+    });
+  } catch (err) {
+    console.error('Login error:', err);
+    return errorResponse(res, {
+      statusCode: 500,
+      message: 'Internal server error'
+    });
+  }
 };
 
 module.exports = {
