@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const jwtConfig = require('../config/jwt');
+const getJwtConfig = require('../config/jwt');
 const userModel = require('../models/user.model');
 const { validateRegister } = require('../validators/auth.validator');
 
@@ -65,6 +65,7 @@ const login = async (req, res) => {
     });
   }
 
+  const jwtConfig = getJwtConfig();
   const token = jwt.sign(
     {
       user_id: user.id,
