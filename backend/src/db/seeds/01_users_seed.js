@@ -42,4 +42,10 @@ exports.seed = async function (knex) {
       is_active: true
     }
   ]);
+
+  await knex.raw(
+    `SELECT setval('users_id_seq', (SELECT MAX(id) FROM users))`
+  );
 };
+
+
