@@ -6,6 +6,7 @@ import TicTacToeGame from '../../games/tictactoe/TicTacToeGame';
 import Caro4Game from '../../games/caro4/Caro4Game';
 import Caro5Game from '../../games/caro5/Caro5Game';
 import SnakeGame from '../../games/snake/SnakeGame';
+import MemoryGame from '../../games/memory/MemoryGame';
 
 
 
@@ -23,10 +24,6 @@ export default function GamePlay() {
   useEffect(() => {
     getGameDetailApi(id)
       .then((res) => {
-        // Test
-        // console.log('GAME DETAIL:', res.data.data);
-
-
         setGame(res.data.data);
       })
       .catch(() => {
@@ -72,6 +69,10 @@ export default function GamePlay() {
 
         case 'snake':
             return <SnakeGame {...engine} />;
+
+        case 'memory':
+            return <MemoryGame {...engine} />;
+
 
 
         default:
