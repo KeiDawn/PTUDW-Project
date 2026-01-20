@@ -7,6 +7,8 @@ import Caro4Game from '../../games/caro4/Caro4Game';
 import Caro5Game from '../../games/caro5/Caro5Game';
 import SnakeGame from '../../games/snake/SnakeGame';
 import MemoryGame from '../../games/memory/MemoryGame';
+import Match3Game from '../../games/match3/Match3Game';
+import FreeDrawGame from '../../games/freeDraw/FreeDrawGame';
 
 
 
@@ -72,6 +74,14 @@ export default function GamePlay() {
 
         case 'memory':
             return <MemoryGame {...engine} />;
+
+        case 'match_3':
+            return <Match3Game {...engine} />;
+
+        case 'free_draw':
+             return <FreeDrawGame {...engine} />;
+
+
 
 
 
