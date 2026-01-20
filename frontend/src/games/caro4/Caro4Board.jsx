@@ -1,9 +1,9 @@
-export default function Caro5Board({ board, onCellClick }) {
+export default function Caro4Board({ board, onCellClick }) {
   return (
     <div
       className="grid gap-1"
       style={{
-        gridTemplateColumns: `repeat(${board.length}, 28px)`
+        gridTemplateColumns: `repeat(${board.length}, 32px)`
       }}
     >
       {board.map((row, i) =>
@@ -11,7 +11,7 @@ export default function Caro5Board({ board, onCellClick }) {
           <button
             key={`${i}-${j}`}
             onClick={() => onCellClick(i, j)}
-            className="w-7 h-7 border text-xs font-bold bg-white"
+            className="w-8 h-8 border text-sm font-bold bg-white"
           >
             {cell}
           </button>

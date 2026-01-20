@@ -27,15 +27,21 @@ export default function GameEngine({
     setState(GAME_STATE.PLAYING);
   };
 
-  const endGame = (result) => {
+  const endGame = (result, finalScore) => {
+    setScore(finalScore);
     setState(GAME_STATE.END);
-    onEnd({ score, time, result });
+
+    onEnd({
+      score: finalScore,
+      time,
+      result
+    });
   };
 
   return children({
     state,
     score,
-    setScore,
+    setScore, 
     time,
     startGame,
     endGame

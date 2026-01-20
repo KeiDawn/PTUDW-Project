@@ -3,6 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import GameEngine from '../../games/engine/GameEngine';
 import TicTacToeGame from '../../games/tictactoe/TicTacToeGame';
+import Caro4Game from '../../games/caro4/Caro4Game';
+import Caro5Game from '../../games/caro5/Caro5Game';
+
+
 
 import { getGameDetailApi } from '../../api/game.api';
 import { saveResultApi } from '../../api/result.api';
@@ -17,6 +21,10 @@ export default function GamePlay() {
   useEffect(() => {
     getGameDetailApi(id)
       .then((res) => {
+        // Test
+        // console.log('GAME DETAIL:', res.data.data);
+
+
         setGame(res.data.data);
       })
       .catch(() => {
@@ -27,12 +35,22 @@ export default function GamePlay() {
   }, [id, navigate]);
 
   const handleEnd = async ({ score, time, result }) => {
-    await saveResultApi(id, {
-      score,
-      duration: time,
-      result
-    });
-  };
+        const safeDuration =
+            Number.isFinite(time) && time > 0 ? time : 1;
+
+        try {
+            await saveResultApi(id, {
+            score,
+            duration: safeDuration,
+            result
+            });
+            console.log('Result saved');
+        } catch (err) {
+            console.error('Save result failed', err);
+            alert('Cannot save game result');
+        }
+    };
+
 
   if (loading) return <p>Loading game...</p>;
   if (!game) return null;
@@ -41,11 +59,20 @@ export default function GamePlay() {
     <GameEngine gameCode={game.code} onEnd={handleEnd}>
       {(engine) => {
         switch (game.code) {
-          case 'tic_tac_toe':
-            return <TicTacToeGame {...engine} />;
-          default:
-            return <p>Game not implemented yet</p>;
-        }
+  case 'tic_tac_toe':
+    return <TicTacToeGame {...engine} />;
+
+  case 'caro_4':
+    return <Caro4Game {...engine} />;
+
+  case 'caro_5':
+    return <Caro5Game {...engine} />;
+
+  default:
+    return <p>Game not implemented yet</p>;
+}
+
+
       }}
     </GameEngine>
   );

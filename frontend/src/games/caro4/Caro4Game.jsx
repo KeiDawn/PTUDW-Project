@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import Caro5Board from './Caro5Board';
+import Caro4Board from './Caro4Board';
 import {
   createEmptyBoard,
   checkWinner,
   getRandomAIMove,
   PLAYER,
   AI
-} from './caro5.logic';
+} from './caro4.logic';
 
-export default function Caro5Game({
+export default function Caro4Game({
   state,
+  score,
+  setScore,
   startGame,
   endGame
 }) {
@@ -43,19 +45,20 @@ export default function Caro5Game({
     }
   };
 
-  const finishGame = (result) => {
+ const finishGame = (result) => {
     if (result === PLAYER) {
-      endGame('win', 300);
+        endGame('win', 100);
     } else if (result === AI) {
-      endGame('lose', 1);
+        endGame('lose', 1);
     } else {
-      endGame('draw', 150);
+        endGame('draw', 50);
     }
-  };
+    };
+
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-bold">Caro 5</h3>
+      <h3 className="text-lg font-bold">Caro 4</h3>
 
       {state === 'idle' && (
         <button
@@ -67,12 +70,12 @@ export default function Caro5Game({
       )}
 
       {state === 'playing' && (
-        <Caro5Board board={board} onCellClick={handlePlayerMove} />
+        <Caro4Board board={board} onCellClick={handlePlayerMove} />
       )}
 
       {state === 'end' && (
         <p className="font-bold text-blue-600">
-          Game Over
+          Game Over – Score: {score}
         </p>
       )}
     </div>

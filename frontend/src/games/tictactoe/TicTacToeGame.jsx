@@ -17,7 +17,7 @@ export default function TicTacToeGame({
 }) {
   const [board, setBoard] = useState(createEmptyBoard());
 
-  // reset when start
+  // Reset when start
   useEffect(() => {
     if (state === 'playing') {
       setBoard(createEmptyBoard());
@@ -35,7 +35,7 @@ export default function TicTacToeGame({
     const result = checkWinner(newBoard);
     if (result) return finishGame(result, newBoard);
 
-    // AI move
+    // Computer Move
     const move = getRandomAIMove(newBoard);
     if (move) {
       const [aiI, aiJ] = move;
@@ -47,18 +47,16 @@ export default function TicTacToeGame({
     }
   };
 
-  const finishGame = (result) => {
-    if (result === PLAYER) {
-      setScore(100);
-      endGame('win');
-    } else if (result === AI) {
-      setScore(0);
-      endGame('lose');
-    } else {
-      setScore(50);
-      endGame('draw');
-    }
-  };
+    const finishGame = (result) => {
+  if (result === PLAYER) {
+    endGame('win', 100);
+  } else if (result === AI) {
+    endGame('lose', 1);
+  } else {
+    endGame('draw', 50);
+  }
+};
+
 
   return (
     <div className="space-y-4">

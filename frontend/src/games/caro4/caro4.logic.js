@@ -2,8 +2,8 @@ export const EMPTY = null;
 export const PLAYER = 'X';
 export const AI = 'O';
 
-export const BOARD_SIZE = 15;
-export const WIN_COUNT = 5;
+export const BOARD_SIZE = 10;
+export const WIN_COUNT = 4;
 
 export function createEmptyBoard() {
   return Array(BOARD_SIZE)
@@ -12,24 +12,24 @@ export function createEmptyBoard() {
 }
 
 export function getRandomAIMove(board) {
-  const emptyCells = [];
+  const empty = [];
 
   board.forEach((row, i) =>
     row.forEach((cell, j) => {
-      if (cell === EMPTY) emptyCells.push([i, j]);
+      if (!cell) empty.push([i, j]);
     })
   );
 
-  if (emptyCells.length === 0) return null;
-  return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+  if (empty.length === 0) return null;
+  return empty[Math.floor(Math.random() * empty.length)];
 }
 
 export function checkWinner(board) {
   const directions = [
-    [1, 0],   // vertical
-    [0, 1],   // horizontal
-    [1, 1],   // diagonal \
-    [1, -1],  // diagonal /
+    [1, 0],  // vertical
+    [0, 1],  // horizontal
+    [1, 1],  // diagonal \
+    [1, -1], // diagonal /
   ];
 
   for (let i = 0; i < BOARD_SIZE; i++) {
@@ -55,15 +55,15 @@ export function checkWinner(board) {
         }
 
         if (count === WIN_COUNT) {
-          return cell; // 'X' or 'O'
+          return cell;
         }
       }
     }
   }
 
   // draw
-  const isFull = board.flat().every(c => c !== EMPTY);
-  if (isFull) return 'draw';
+  const full = board.flat().every(c => c !== EMPTY);
+  if (full) return 'draw';
 
   return null;
 }
