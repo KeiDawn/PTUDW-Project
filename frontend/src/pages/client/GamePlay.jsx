@@ -10,11 +10,16 @@ import MemoryGame from '../../games/memory/MemoryGame';
 import Match3Game from '../../games/match3/Match3Game';
 import FreeDrawGame from '../../games/freeDraw/FreeDrawGame';
 
-
-
-
 import { getGameDetailApi } from '../../api/game.api';
 import { saveResultApi } from '../../api/result.api';
+
+// STEP 2 UI components
+import GameHeader from '../../components/gameplay/GameHeader';
+import GameFooter from '../../components/gameplay/GameFooter';
+import GameGuideModal from '../../components/gameplay/GameGuideModal';
+import GameResultModal from '../../components/gameplay/GameResultModal';
+
+import { GAME_GUIDES } from "../../guides/gameGuides";
 
 export default function GamePlay() {
   const { id } = useParams();
@@ -22,6 +27,10 @@ export default function GamePlay() {
 
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // UI state 
+  const [showGuide, setShowGuide] = useState(false);
+  const [showResult, setShowResult] = useState(false);
 
   useEffect(() => {
     getGameDetailApi(id)
@@ -36,61 +45,100 @@ export default function GamePlay() {
   }, [id, navigate]);
 
   const handleEnd = async ({ score, time, result }) => {
-        const safeDuration =
-            Number.isFinite(time) && time > 0 ? time : 1;
+    const safeDuration =
+      Number.isFinite(time) && time > 0 ? time : 1;
 
-        try {
-            await saveResultApi(id, {
-            score,
-            duration: safeDuration,
-            result
-            });
-            console.log('Result saved');
-        } catch (err) {
-            console.error('Save result failed', err);
-            alert('Cannot save game result');
-        }
-    };
+    try {
+      await saveResultApi(id, {
+        score,
+        duration: safeDuration,
+        result
+      });
+      setShowResult(true); 
+    } catch (err) {
+      console.error('Save result failed', err);
+      alert('Cannot save game result');
+    }
+  };
 
+  const renderGame = (engine) => {
+    switch (game.code) {
+      case 'tic_tac_toe':
+        return <TicTacToeGame {...engine} />;
+
+      case 'caro_4':
+        return <Caro4Game {...engine} />;
+
+      case 'caro_5':
+        return <Caro5Game {...engine} />;
+
+      case 'snake':
+        return <SnakeGame {...engine} />;
+
+      case 'memory':
+        return <MemoryGame {...engine} />;
+
+      case 'match_3':
+        return <Match3Game {...engine} />;
+
+      case 'free_draw':
+        return <FreeDrawGame {...engine} />;
+
+      default:
+        return <p>Game not implemented yet</p>;
+    }
+  };
 
   if (loading) return <p>Loading game...</p>;
   if (!game) return null;
 
   return (
     <GameEngine gameCode={game.code} onEnd={handleEnd}>
-      {(engine) => {
-        switch (game.code) {
-        case 'tic_tac_toe':
-            return <TicTacToeGame {...engine} />;
+      {(engine) => (
+        <div className="flex flex-col h-screen">
 
-        case 'caro_4':
-            return <Caro4Game {...engine} />;
+          {/* HEADER */}
+          <GameHeader
+            title={game.name}
+            score={engine.score}
+            time={engine.time}
+            canResume={engine.canResume}
+            onResume={engine.resume}
+          />
 
-        case 'caro_5':
-            return <Caro5Game {...engine} />;
+          {/* BOARD AREA */}
+          <div className="flex-1 flex justify-center items-center">
+            {renderGame(engine)}
+          </div>
 
-        case 'snake':
-            return <SnakeGame {...engine} />;
+          {/* FOOTER */}
+          <GameFooter
+            disabled={engine.state === 'end'}
+            onBack={() => {
+              engine.save();
+              navigate('/dashboard');
+            }}
+            onHint={() => setShowGuide(true)}
+          />
 
-        case 'memory':
-            return <MemoryGame {...engine} />;
+          {/* GUIDE MODAL */}
+          {showGuide && (
+            <GameGuideModal
+              guide={GAME_GUIDES[engine.gameCode]}
+              onClose={() => setShowGuide(false)}
+            />
+          )}
 
-        case 'match_3':
-            return <Match3Game {...engine} />;
-
-        case 'free_draw':
-             return <FreeDrawGame {...engine} />;
-
-
-
-
-
-        default:
-            return <p>Game not implemented yet</p>;
-        }
-
-
-      }}
+          {/* RESULT MODAL */}
+          {engine.state === 'end' && showResult && (
+            <GameResultModal
+              score={engine.score}
+              time={engine.time}
+              onClose={() => setShowResult(false)}
+            />
+          )}
+        </div>
+      )}
     </GameEngine>
   );
 }
