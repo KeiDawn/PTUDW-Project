@@ -42,6 +42,25 @@ router.get(
 router.get('/', gameController.getGames);
 
 /**
+ * POST /games/:id/rating
+ * Auth – rate a game
+ */
+router.post(
+  '/:id/rating',
+  authMiddleware,
+  gameController.rateGame
+);
+
+/**
+ * GET /games/:id/ratings
+ * Public – list ratings of a game
+ */
+router.get(
+  '/:id/ratings',
+  gameController.getGameRatings
+);
+
+/**
  * GET /games/:id
  * Public – game detail + guide
  */
