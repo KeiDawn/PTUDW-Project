@@ -6,6 +6,7 @@ export default function PublicLayout() {
       <header className="p-4 bg-blue-600 text-white">
         Public Area
       </header>
+
       <main className="p-6">
         <Outlet />
       </main>
