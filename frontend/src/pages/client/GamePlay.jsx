@@ -5,6 +5,8 @@ import GameEngine from '../../games/engine/GameEngine';
 import TicTacToeGame from '../../games/tictactoe/TicTacToeGame';
 import Caro4Game from '../../games/caro4/Caro4Game';
 import Caro5Game from '../../games/caro5/Caro5Game';
+import SnakeGame from '../../games/snake/SnakeGame';
+
 
 
 
@@ -59,18 +61,22 @@ export default function GamePlay() {
     <GameEngine gameCode={game.code} onEnd={handleEnd}>
       {(engine) => {
         switch (game.code) {
-  case 'tic_tac_toe':
-    return <TicTacToeGame {...engine} />;
+        case 'tic_tac_toe':
+            return <TicTacToeGame {...engine} />;
 
-  case 'caro_4':
-    return <Caro4Game {...engine} />;
+        case 'caro_4':
+            return <Caro4Game {...engine} />;
 
-  case 'caro_5':
-    return <Caro5Game {...engine} />;
+        case 'caro_5':
+            return <Caro5Game {...engine} />;
 
-  default:
-    return <p>Game not implemented yet</p>;
-}
+        case 'snake':
+            return <SnakeGame {...engine} />;
+
+
+        default:
+            return <p>Game not implemented yet</p>;
+        }
 
 
       }}
