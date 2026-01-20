@@ -1,3 +1,3 @@
 export default function AdminDashboard() {
-  return <h2 className="text-xl">Admin Dashboard</h2>;
+  return <h2 className="text-xl">Admin Dashboard (Mock)</h2>;
 }

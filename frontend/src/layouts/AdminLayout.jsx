@@ -6,6 +6,7 @@ export default function AdminLayout() {
       <header className="p-4 bg-red-600 text-white">
         Admin Panel
       </header>
+
       <main className="p-6">
         <Outlet />
       </main>
