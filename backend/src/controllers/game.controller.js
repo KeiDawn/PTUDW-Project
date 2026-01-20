@@ -7,7 +7,6 @@ const {
 
 /**
  * Hard-code guide for games
- * (Phase 02 – đúng spec, chưa cần DB)
  */
 const GAME_GUIDES = {
   caro_5: {
@@ -140,6 +139,22 @@ const saveResult = async (req, res) => {
     const { score, duration, result } = req.body;
     const userId = req.user.user_id;
 
+    // Validate score
+    if (!Number.isFinite(score) || score <= 0) {
+      return errorResponse(res, {
+        statusCode: 400,
+        message: 'Invalid score'
+      });
+    }
+
+    // Validate duration
+    if (!Number.isFinite(duration) || duration <= 0) {
+      return errorResponse(res, {
+        statusCode: 400,
+        message: 'Invalid duration'
+      });
+    }
+
     // Validate input
     if (
       typeof score !== 'number' ||
@@ -214,4 +229,34 @@ module.exports = {
   getGameDetail,
   saveResult,
   getRanking
+};
+
+/**
+ * GET /ranking/me
+ * Auth required – personal ranking
+ */
+const getMyRanking = async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+
+    const ranking = await gameResultModel.getMyRankingByGame(userId);
+
+    return successResponse(res, {
+      data: ranking
+    });
+  } catch (err) {
+    console.error('getMyRanking error:', err);
+    return errorResponse(res, {
+      statusCode: 500,
+      message: 'Internal server error'
+    });
+  }
+};
+
+module.exports = {
+  getGames,
+  getGameDetail,
+  saveResult,
+  getRanking,
+  getMyRanking
 };

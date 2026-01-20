@@ -6,20 +6,44 @@ const authMiddleware = require('../middlewares/auth.middleware');
 
 /**
  * =========================
+ * RANKING ROUTES 
+ * =========================
+ */
+
+/**
+ * GET /games/ranking/me
+ * Auth – personal ranking
+ */
+router.get(
+  '/ranking/me',
+  authMiddleware,
+  gameController.getMyRanking
+);
+
+/**
+ * GET /games/ranking
+ * Public – ranking by Total Score / Game (TOP 10)
+ */
+router.get(
+  '/ranking',
+  gameController.getRanking
+);
+
+/**
+ * =========================
  * GAME ROUTES
  * =========================
  */
 
 /**
  * GET /games
- * Public – list enabled games (basic info)
+ * Public – list enabled games 
  */
 router.get('/', gameController.getGames);
 
 /**
  * GET /games/:id
  * Public – game detail + guide
- * Disabled game -> 403
  */
 router.get('/:id', gameController.getGameDetail);
 
@@ -32,17 +56,5 @@ router.post(
   authMiddleware,
   gameController.saveResult
 );
-
-/**
- * =========================
- * RANKING ROUTE
- * =========================
- */
-
-/**
- * GET /ranking
- * Public – ranking by total score per game (TOP 10)
- */
-router.get('/ranking', gameController.getRanking);
 
 module.exports = router;
