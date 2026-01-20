@@ -11,6 +11,7 @@ import Home from '../pages/public/Home';
 import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
 import Dashboard from '../pages/client/Dashboard';
+import GamePlay from '../pages/client/GamePlay';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 
 export default function AppRoutes() {
@@ -32,6 +33,7 @@ export default function AppRoutes() {
         }
       >
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="games/:id/play" element={<GamePlay />} />
       </Route>
 
       {/* Admin */}

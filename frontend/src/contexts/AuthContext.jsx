@@ -4,27 +4,31 @@ import { loginApi } from '../api/auth.api';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
 
   // Restore login on refresh
   useEffect(() => {
   const storedUser = localStorage.getItem('user');
   const token = localStorage.getItem('access_token');
 
-  if (storedUser && storedUser !== 'undefined' && token) {
+  if (storedUser && token) {
     try {
       setUser(JSON.parse(storedUser));
-    } catch (e) {
-      console.error('Invalid user in localStorage, clearing...');
+    } catch {
       localStorage.removeItem('user');
       localStorage.removeItem('access_token');
-      setUser(null);
     }
   }
+
+  setLoading(false);
 }, []);
 
 
-  const login = async (credentials) => {
+
+    const login = async (credentials) => {
     const res = await loginApi(credentials);
 
     // const { token, user } = res.data;
@@ -35,7 +39,7 @@ export function AuthProvider({ children }) {
 
     setUser(user);
 
-    return user; // FE dùng để redirect theo role
+    return user; 
   };
 
   const logout = () => {
@@ -45,7 +49,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
