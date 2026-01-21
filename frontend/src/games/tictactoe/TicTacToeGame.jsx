@@ -7,56 +7,102 @@ import {
   PLAYER,
   AI
 } from './tictactoe.logic';
+import { useBoardCursor } from '../engine/useBoardCursor';
 
 export default function TicTacToeGame({
   state,
   score,
-  setScore,
   startGame,
   endGame
 }) {
   const [board, setBoard] = useState(createEmptyBoard());
 
-  // Reset when start
+  const {
+    cursor,
+    moveLeft,
+    moveRight,
+    moveUp,
+    moveDown,
+    resetCursor
+  } = useBoardCursor({
+    rows: 3,
+    cols: 3,
+    enabled: state === 'playing'
+  });
+
   useEffect(() => {
     if (state === 'playing') {
       setBoard(createEmptyBoard());
+      resetCursor();
     }
   }, [state]);
 
-  const handlePlayerMove = (i, j) => {
-    if (state !== 'playing') return;
+  const handleMove = (i, j) => {
     if (board[i][j]) return;
 
     const newBoard = board.map(r => [...r]);
     newBoard[i][j] = PLAYER;
     setBoard(newBoard);
 
-    const result = checkWinner(newBoard);
-    if (result) return finishGame(result, newBoard);
+    let result = checkWinner(newBoard);
+    if (result) return finishGame(result);
 
-    // Computer Move
     const move = getRandomAIMove(newBoard);
     if (move) {
-      const [aiI, aiJ] = move;
-      newBoard[aiI][aiJ] = AI;
+      const [x, y] = move;
+      newBoard[x][y] = AI;
       setBoard([...newBoard]);
 
-      const aiResult = checkWinner(newBoard);
-      if (aiResult) finishGame(aiResult, newBoard);
+      result = checkWinner(newBoard);
+      if (result) finishGame(result);
     }
   };
 
-    const finishGame = (result) => {
-  if (result === PLAYER) {
-    endGame('win', 100);
-  } else if (result === AI) {
-    endGame('lose', 1);
-  } else {
-    endGame('draw', 50);
-  }
-};
+  const handleEnter = () => {
+    handleMove(cursor.row, cursor.col);
+  };
 
+  const finishGame = (result) => {
+    if (result === PLAYER) {
+      endGame('win', 100);
+    } else if (result === AI) {
+      endGame('lose', 1);
+    } else {
+      endGame('draw', 50);
+    }
+  };
+
+  /**
+   * Keyboard mapping riêng cho TicTacToe
+   */
+  useEffect(() => {
+    if (state !== 'playing') return;
+
+    const handleKey = (e) => {
+      switch (e.key) {
+        case 'ArrowLeft':
+          moveLeft();
+          break;
+        case 'ArrowRight':
+          moveRight();
+          break;
+        case 'ArrowUp':
+          moveUp();
+          break;
+        case 'ArrowDown':
+          moveDown();
+          break;
+        case 'Enter':
+          handleEnter();
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [state, cursor]);
 
   return (
     <div className="space-y-4">
@@ -74,7 +120,8 @@ export default function TicTacToeGame({
       {state === 'playing' && (
         <TicTacToeBoard
           board={board}
-          onCellClick={handlePlayerMove}
+          cursor={cursor}
+          onCellClick={handleMove}
         />
       )}
 

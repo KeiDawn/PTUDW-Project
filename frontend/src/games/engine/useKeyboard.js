@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 
-export function useKeyboard(handlers) {
+export function useKeyboard(handlers, enabled = true) {
   useEffect(() => {
+    if (!enabled) return;
+
     const handleKey = (e) => {
       switch (e.key) {
         case 'ArrowLeft':
@@ -17,6 +19,7 @@ export function useKeyboard(handlers) {
           handlers.onBack?.();
           break;
         case 'h':
+        case 'H':
           handlers.onHint?.();
           break;
         default:
@@ -26,5 +29,5 @@ export function useKeyboard(handlers) {
 
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [handlers]);
+  }, [handlers, enabled]);
 }

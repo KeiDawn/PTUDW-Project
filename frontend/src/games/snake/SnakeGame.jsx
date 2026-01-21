@@ -17,75 +17,65 @@ export default function SnakeGame({
   const [food, setFood] = useState(createFood(createInitialSnake()));
   const [direction, setDirection] = useState(DIRECTIONS.RIGHT);
   const [score, setScore] = useState(0);
-  const [isGameOver, setIsGameOver] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
 
-  // Reset game
   useEffect(() => {
     if (state === 'playing') {
-      const initialSnake = createInitialSnake();
-      setSnake(initialSnake);
-      setFood(createFood(initialSnake));
+      const initial = createInitialSnake();
+      setSnake(initial);
+      setFood(createFood(initial));
       setDirection(DIRECTIONS.RIGHT);
       setScore(0);
-      setIsGameOver(false);
+      setGameOver(false);
     }
   }, [state]);
 
-  // Game loop
   useEffect(() => {
-    if (state !== 'playing' || isGameOver) return;
+    if (state !== 'playing' || gameOver) return;
 
     const interval = setInterval(() => {
-      setSnake(prevSnake => {
-        const newSnake = moveSnake(prevSnake, direction);
+      setSnake(prev => {
+        const next = moveSnake(prev, direction);
 
-        if (checkCollision(newSnake)) {
-          setIsGameOver(true);
-          return prevSnake;
+        if (checkCollision(next)) {
+          setGameOver(true);
+          return prev;
         }
 
-        const head = newSnake[0];
+        const head = next[0];
         if (head.x === food.x && head.y === food.y) {
           setScore(s => s + 10);
-          setFood(createFood(newSnake));
-          return [...newSnake, prevSnake[prevSnake.length - 1]];
+          setFood(createFood(next));
+          return [...next, prev[prev.length - 1]];
         }
 
-        return newSnake;
+        return next;
       });
     }, 200);
 
     return () => clearInterval(interval);
-  }, [state, direction, food, isGameOver]);
+  }, [state, direction, food, gameOver]);
 
-  // End game safely (AFTER render)
   useEffect(() => {
-    if (isGameOver) {
+    if (gameOver) {
       endGame('lose', score || 1);
     }
-  }, [isGameOver, score, endGame]);
+  }, [gameOver, score, endGame]);
 
-  // Keyboard control
   useEffect(() => {
     const handleKey = e => {
+      if (state !== 'playing') return;
       switch (e.key) {
-        case 'ArrowUp':
-          setDirection(DIRECTIONS.UP);
-          break;
-        case 'ArrowDown':
-          setDirection(DIRECTIONS.DOWN);
-          break;
-        case 'ArrowLeft':
-          setDirection(DIRECTIONS.LEFT);
-          break;
-        case 'ArrowRight':
-          setDirection(DIRECTIONS.RIGHT);
-          break;
+        case 'ArrowUp': setDirection(DIRECTIONS.UP); break;
+        case 'ArrowDown': setDirection(DIRECTIONS.DOWN); break;
+        case 'ArrowLeft': setDirection(DIRECTIONS.LEFT); break;
+        case 'ArrowRight': setDirection(DIRECTIONS.RIGHT); break;
+        default: break;
       }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, []);
+  }, [state]);
 
   return (
     <div className="space-y-4">
@@ -109,10 +99,9 @@ export default function SnakeGame({
 
       {state === 'end' && (
         <p className="font-bold text-blue-600">
-          Game Over
+          Game Over – Score: {score}
         </p>
       )}
     </div>
   );
 }
-

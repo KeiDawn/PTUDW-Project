@@ -27,36 +27,31 @@ export default function MemoryGame({
         c.id === id ? { ...c, flipped: true } : c
       )
     );
-
     setFlipped(prev => [...prev, id]);
   };
 
   useEffect(() => {
     if (flipped.length !== 2) return;
 
-    const [id1, id2] = flipped;
-    const card1 = cards.find(c => c.id === id1);
-    const card2 = cards.find(c => c.id === id2);
+    const [a, b] = flipped;
+    const c1 = cards.find(c => c.id === a);
+    const c2 = cards.find(c => c.id === b);
 
-    if (!card1 || !card2) return;
+    if (!c1 || !c2) return;
 
-    if (card1.value === card2.value) {
-      // Match
+    if (c1.value === c2.value) {
       setCards(prev =>
         prev.map(c =>
-          c.value === card1.value
-            ? { ...c, matched: true }
-            : c
+          c.value === c1.value ? { ...c, matched: true } : c
         )
       );
       setScore(s => s + 20);
       setFlipped([]);
     } else {
-      // Not match
       setTimeout(() => {
         setCards(prev =>
           prev.map(c =>
-            c.id === id1 || c.id === id2
+            c.id === a || c.id === b
               ? { ...c, flipped: false }
               : c
           )
@@ -74,7 +69,7 @@ export default function MemoryGame({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-bold">Memory Game</h3>
+      <h3 className="text-lg font-bold">Memory</h3>
 
       {state === 'idle' && (
         <button
@@ -94,7 +89,7 @@ export default function MemoryGame({
 
       {state === 'end' && (
         <p className="font-bold text-blue-600">
-          Completed! Final Score: {score}
+          Completed – Score: {score}
         </p>
       )}
     </div>

@@ -1,13 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { GAME_STATE } from './gameState';
 import { useTimer } from './useTimer';
 import { useKeyboard } from './useKeyboard';
-import { saveGame, loadGame, hasSavedGame, clearSavedGame } from './saveLoad';
+import {
+  saveGame,
+  loadGame,
+  hasSavedGame,
+  clearSavedGame
+} from './saveLoad';
 
 export default function GameEngine({
   gameCode,
   children,
-  onEnd
+  onEnd,
+  onBack,
+  onHint
 }) {
   const [state, setState] = useState(GAME_STATE.IDLE);
   const [score, setScore] = useState(0);
@@ -16,13 +23,16 @@ export default function GameEngine({
 
   const canResume = hasSavedGame(gameCode);
 
-  // Keyboard: Back = save + exit
-  useKeyboard({
-    onBack: () => {
-      save();
-      setState(GAME_STATE.IDLE);
-    }
-  });
+  useKeyboard(
+    {
+      onBack: () => {
+        save();
+        onBack?.();
+      },
+      onHint
+    },
+    state === GAME_STATE.PLAYING
+  );
 
   const startGame = () => {
     clearSavedGame(gameCode);
@@ -42,8 +52,6 @@ export default function GameEngine({
       result
     });
   };
-
-  /** ===== SAVE / LOAD ===== */
 
   const save = () => {
     saveGame(gameCode, {
@@ -66,11 +74,10 @@ export default function GameEngine({
     state,
     score,
     time,
-    gameCode,
     startGame,
     endGame,
     save,
-    canResume,
-    resume
+    resume,
+    canResume
   });
 }

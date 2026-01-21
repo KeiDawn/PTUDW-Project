@@ -1,10 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import Match3Board from './Match3Board';
-import {
-  createBoard,
-  findMatches,
-  clearMatches
-} from './match3.logic';
+import { createBoard, findMatches, clearMatches } from './match3.logic';
 
 export default function Match3Game({
   state,
@@ -16,15 +12,12 @@ export default function Match3Game({
   const [selected, setSelected] = useState(null);
 
   const scoreRef = useRef(0);
-  const endTimerRef = useRef(null);
-  const endedRef = useRef(false); // 🔑 khóa endGame
+  const endedRef = useRef(false);
 
-  // Keep scoreRef updated
   useEffect(() => {
     scoreRef.current = score;
   }, [score]);
 
-  // Reset game when start
   useEffect(() => {
     if (state === 'playing') {
       setBoard(createBoard());
@@ -48,7 +41,7 @@ export default function Match3Game({
       [newBoard[x][y], newBoard[i][j]];
 
     const matches = findMatches(newBoard);
-    if (matches.length > 0) {
+    if (matches.length) {
       setScore(s => s + matches.length * 10);
       setBoard(clearMatches(newBoard, matches));
     }
@@ -56,34 +49,18 @@ export default function Match3Game({
     setSelected(null);
   };
 
-  /**
-   * ⏱️ End game after 60s – CHỈ CHẠY 1 LẦN
-   */
   useEffect(() => {
-    if (state === 'playing' && !endTimerRef.current) {
-      endTimerRef.current = setTimeout(() => {
-        if (!endedRef.current) {
-          endedRef.current = true;
-          endGame('win', scoreRef.current || 1);
-        }
-      }, 60000);
-    }
+    if (state !== 'playing') return;
 
-    return () => {
-      // ❌ KHÔNG clear timer ở đây
-      // timer chỉ được clear khi component unmount
-    };
-  }, [state, endGame]);
-
-  // Cleanup khi unmount
-  useEffect(() => {
-    return () => {
-      if (endTimerRef.current) {
-        clearTimeout(endTimerRef.current);
-        endTimerRef.current = null;
+    const timer = setTimeout(() => {
+      if (!endedRef.current) {
+        endedRef.current = true;
+        endGame('win', scoreRef.current || 1);
       }
-    };
-  }, []);
+    }, 60000);
+
+    return () => clearTimeout(timer);
+  }, [state, endGame]);
 
   return (
     <div className="space-y-4">
@@ -101,16 +78,13 @@ export default function Match3Game({
       {state === 'playing' && (
         <>
           <p>Score: {score}</p>
-          <Match3Board
-            board={board}
-            onCellClick={handleCellClick}
-          />
+          <Match3Board board={board} onCellClick={handleCellClick} />
         </>
       )}
 
       {state === 'end' && (
         <p className="font-bold text-blue-600">
-          Game Over – Final Score: {score}
+          Game Over – Score: {score}
         </p>
       )}
     </div>

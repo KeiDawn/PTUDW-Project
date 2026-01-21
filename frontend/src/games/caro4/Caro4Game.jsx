@@ -11,7 +11,6 @@ import {
 export default function Caro4Game({
   state,
   score,
-  setScore,
   startGame,
   endGame
 }) {
@@ -45,16 +44,15 @@ export default function Caro4Game({
     }
   };
 
- const finishGame = (result) => {
+  const finishGame = (result) => {
     if (result === PLAYER) {
-        endGame('win', 100);
+      endGame('win', 100);
     } else if (result === AI) {
-        endGame('lose', 1);
+      endGame('lose', 1);
     } else {
-        endGame('draw', 50);
+      endGame('draw', 50);
     }
-    };
-
+  };
 
   return (
     <div className="space-y-4">

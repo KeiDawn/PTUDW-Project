@@ -10,6 +10,7 @@ import {
 
 export default function Caro5Game({
   state,
+  score,
   startGame,
   endGame
 }) {
@@ -72,7 +73,7 @@ export default function Caro5Game({
 
       {state === 'end' && (
         <p className="font-bold text-blue-600">
-          Game Over
+          Game Over – Score: {score}
         </p>
       )}
     </div>

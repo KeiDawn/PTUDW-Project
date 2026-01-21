@@ -42,6 +42,9 @@ export default function GamePlay() {
       .finally(() => setLoading(false));
   }, [id, navigate]);
 
+  /**
+   * Called by GameEngine when game ends
+   */
   const handleEnd = async ({ score, time, result }) => {
     const safeDuration =
       Number.isFinite(time) && time > 0 ? time : 1;
@@ -76,7 +79,12 @@ export default function GamePlay() {
   if (!game) return null;
 
   return (
-    <GameEngine gameCode={game.code} onEnd={handleEnd}>
+    <GameEngine
+      gameCode={game.code}
+      onEnd={handleEnd}
+      onBack={() => navigate('/dashboard')}
+      onHint={() => setShowGuide(true)}
+    >
       {(engine) => (
         <div className="flex flex-col h-screen">
 
@@ -104,12 +112,11 @@ export default function GamePlay() {
           />
 
           {showGuide && (
-  <GameGuideModal
-    guide={GAME_GUIDES[engine.gameCode]}
-    onClose={() => setShowGuide(false)}
-  />
-)}
-
+            <GameGuideModal
+              guide={GAME_GUIDES[game.code]}
+              onClose={() => setShowGuide(false)}
+            />
+          )}
 
           <GameResultModal
             visible={engine.state === 'end' && showResult}
