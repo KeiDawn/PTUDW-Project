@@ -5,8 +5,10 @@ import {
   checkWinner,
   getRandomAIMove,
   PLAYER,
-  AI
+  AI,
+  BOARD_SIZE
 } from './caro5.logic';
+import { useBoardCursor } from '../engine/useBoardCursor';
 
 export default function Caro5Game({
   state,
@@ -16,14 +18,27 @@ export default function Caro5Game({
 }) {
   const [board, setBoard] = useState(createEmptyBoard());
 
+  const {
+    cursor,
+    moveLeft,
+    moveRight,
+    moveUp,
+    moveDown,
+    resetCursor
+  } = useBoardCursor({
+    rows: BOARD_SIZE,
+    cols: BOARD_SIZE,
+    enabled: state === 'playing'
+  });
+
   useEffect(() => {
     if (state === 'playing') {
       setBoard(createEmptyBoard());
+      resetCursor();
     }
   }, [state]);
 
-  const handlePlayerMove = (i, j) => {
-    if (state !== 'playing') return;
+  const handleMove = (i, j) => {
     if (board[i][j]) return;
 
     const newBoard = board.map(r => [...r]);
@@ -33,15 +48,19 @@ export default function Caro5Game({
     let result = checkWinner(newBoard);
     if (result) return finishGame(result);
 
-    const move = getRandomAIMove(newBoard);
-    if (move) {
-      const [x, y] = move;
+    const aiMove = getRandomAIMove(newBoard);
+    if (aiMove) {
+      const [x, y] = aiMove;
       newBoard[x][y] = AI;
       setBoard([...newBoard]);
 
       result = checkWinner(newBoard);
       if (result) finishGame(result);
     }
+  };
+
+  const handleEnter = () => {
+    handleMove(cursor.row, cursor.col);
   };
 
   const finishGame = (result) => {
@@ -53,6 +72,38 @@ export default function Caro5Game({
       endGame('draw', 150);
     }
   };
+
+  /**
+   * Keyboard mapping RIÊNG cho Caro 5
+   */
+  useEffect(() => {
+    if (state !== 'playing') return;
+
+    const handleKey = (e) => {
+      switch (e.key) {
+        case 'ArrowLeft':
+          moveLeft();
+          break;
+        case 'ArrowRight':
+          moveRight();
+          break;
+        case 'ArrowUp':
+          moveUp();
+          break;
+        case 'ArrowDown':
+          moveDown();
+          break;
+        case 'Enter':
+          handleEnter();
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [state, cursor]);
 
   return (
     <div className="space-y-4">
@@ -68,7 +119,11 @@ export default function Caro5Game({
       )}
 
       {state === 'playing' && (
-        <Caro5Board board={board} onCellClick={handlePlayerMove} />
+        <Caro5Board
+          board={board}
+          cursor={cursor}
+          onCellClick={handleMove}
+        />
       )}
 
       {state === 'end' && (

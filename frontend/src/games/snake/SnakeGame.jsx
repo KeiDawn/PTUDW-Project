@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import SnakeBoard from './SnakeBoard';
 import {
   createInitialSnake,
@@ -19,6 +19,11 @@ export default function SnakeGame({
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
 
+  const endedRef = useRef(false);
+
+  /**
+   * Reset game when start
+   */
   useEffect(() => {
     if (state === 'playing') {
       const initial = createInitialSnake();
@@ -27,9 +32,13 @@ export default function SnakeGame({
       setDirection(DIRECTIONS.RIGHT);
       setScore(0);
       setGameOver(false);
+      endedRef.current = false; 
     }
   }, [state]);
 
+  /**
+   * Game loop
+   */
   useEffect(() => {
     if (state !== 'playing' || gameOver) return;
 
@@ -56,21 +65,39 @@ export default function SnakeGame({
     return () => clearInterval(interval);
   }, [state, direction, food, gameOver]);
 
+  /**
+   * End game 
+   */
   useEffect(() => {
-    if (gameOver) {
+    if (
+      state === 'playing' &&
+      gameOver &&
+      !endedRef.current
+    ) {
+      endedRef.current = true;
       endGame('lose', score || 1);
     }
-  }, [gameOver, score, endGame]);
+  }, [gameOver, score, state, endGame]);
+
 
   useEffect(() => {
     const handleKey = e => {
       if (state !== 'playing') return;
       switch (e.key) {
-        case 'ArrowUp': setDirection(DIRECTIONS.UP); break;
-        case 'ArrowDown': setDirection(DIRECTIONS.DOWN); break;
-        case 'ArrowLeft': setDirection(DIRECTIONS.LEFT); break;
-        case 'ArrowRight': setDirection(DIRECTIONS.RIGHT); break;
-        default: break;
+        case 'ArrowUp':
+          setDirection(DIRECTIONS.UP);
+          break;
+        case 'ArrowDown':
+          setDirection(DIRECTIONS.DOWN);
+          break;
+        case 'ArrowLeft':
+          setDirection(DIRECTIONS.LEFT);
+          break;
+        case 'ArrowRight':
+          setDirection(DIRECTIONS.RIGHT);
+          break;
+        default:
+          break;
       }
     };
     window.addEventListener('keydown', handleKey);

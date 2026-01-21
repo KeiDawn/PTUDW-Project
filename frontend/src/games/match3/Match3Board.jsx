@@ -1,4 +1,9 @@
-export default function Match3Board({ board, onCellClick }) {
+export default function Match3Board({
+  board,
+  cursor,
+  selected,
+  onCellClick
+}) {
   return (
     <div
       className="grid gap-1"
@@ -7,15 +12,29 @@ export default function Match3Board({ board, onCellClick }) {
       }}
     >
       {board.map((row, i) =>
-        row.map((cell, j) => (
-          <button
-            key={`${i}-${j}`}
-            onClick={() => onCellClick(i, j)}
-            className="w-10 h-10 text-lg font-bold bg-yellow-200 border"
-          >
-            {cell}
-          </button>
-        ))
+        row.map((cell, j) => {
+          const isCursor =
+            cursor.row === i && cursor.col === j;
+
+          const isSelected =
+            selected &&
+            selected[0] === i &&
+            selected[1] === j;
+
+          return (
+            <button
+              key={`${i}-${j}`}
+              onClick={() => onCellClick(i, j)}
+              className={`
+                w-10 h-10 text-lg font-bold border
+                ${isCursor ? 'ring-2 ring-blue-500' : ''}
+                ${isSelected ? 'bg-green-300' : 'bg-yellow-200'}
+              `}
+            >
+              {cell}
+            </button>
+          );
+        })
       )}
     </div>
   );
