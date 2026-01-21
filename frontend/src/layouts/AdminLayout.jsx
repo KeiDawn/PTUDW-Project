@@ -1,10 +1,12 @@
-import { Outlet } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 
 export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-red-100">
-      <header className="p-4 bg-red-600 text-white">
-        Admin Panel
+      <header className="p-4 bg-red-600 text-white flex gap-4">
+        <NavLink to="/admin">Dashboard</NavLink>
+        <NavLink to="/admin/users">Users</NavLink>
+        <NavLink to="/admin/games">Games</NavLink>
       </header>
 
       <main className="p-6">
@@ -13,3 +15,4 @@ export default function AdminLayout() {
     </div>
   );
 }
+

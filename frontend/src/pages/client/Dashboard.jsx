@@ -78,9 +78,10 @@ export default function Dashboard() {
         })}
       </div>
 
-      <p className="text-sm text-gray-600">
+      <p className="mt-6 text-lg text-gray-700 text-center font-medium">
         Use ⬅ / ➡ to choose game, ⏎ Enter to play
       </p>
+
     </div>
   );
 }

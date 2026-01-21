@@ -1,16 +1,18 @@
-import { useEffect, useState } from 'react';
-import { searchUsersApi } from '../../api/user.api';
-import UserCard from '../../components/UserCard';
+import { useState } from 'react';
 
 export default function UserSearch() {
-  const [users, setUsers] = useState([]);
+  // FE mock users 
+  const users = [
+    { id: 1, email: 'user1@ptudw.com' },
+    { id: 2, email: 'user2@ptudw.com' },
+    { id: 3, email: 'user3@ptudw.com' },
+    { id: 4, email: 'user4@ptudw.com' },
+    { id: 5, email: 'user5@ptudw.com' }
+  ];
+
   const [query, setQuery] = useState('');
 
-  useEffect(() => {
-    searchUsersApi().then(res => setUsers(res.data.data || []));
-  }, []);
-
-  const filtered = users.filter(u =>
+  const filteredUsers = users.filter(u =>
     u.email.toLowerCase().includes(query.toLowerCase())
   );
 
@@ -23,11 +25,20 @@ export default function UserSearch() {
         placeholder="Search by email..."
         className="border p-2 mb-4 w-full"
         value={query}
-        onChange={e => setQuery(e.target.value)}
+        onChange={(e) => setQuery(e.target.value)}
       />
 
-      {filtered.map(u => (
-        <UserCard key={u.id} user={u} />
+      {query && filteredUsers.length === 0 && (
+        <p className="text-gray-500">No users found.</p>
+      )}
+
+      {filteredUsers.map(u => (
+        <div
+          key={u.id}
+          className="border p-2 mb-2 rounded"
+        >
+          {u.email}
+        </div>
       ))}
     </div>
   );

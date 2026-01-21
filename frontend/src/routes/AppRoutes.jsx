@@ -21,6 +21,9 @@ import Achievements from '../pages/client/Achievements';
 import Ranking from '../pages/client/Ranking';
 
 import AdminDashboard from '../pages/admin/AdminDashboard';
+import ManageUsers from '../pages/admin/ManageUsers';
+import ManageGames from '../pages/admin/ManageGames';
+
 
 export default function AppRoutes() {
   return (
@@ -58,7 +61,10 @@ export default function AppRoutes() {
           </AdminRoute>
         }
       >
+
         <Route path="admin" element={<AdminDashboard />} />
+        <Route path="admin/users" element={<ManageUsers />} />
+        <Route path="admin/games" element={<ManageGames />} />
       </Route>
     </Routes>
   );
