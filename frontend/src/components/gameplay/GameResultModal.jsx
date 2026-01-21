@@ -1,4 +1,11 @@
-export default function GameResultModal({ score, time, onClose }) {
+export default function GameResultModal({
+  visible,
+  score,
+  time,
+  onClose
+}) {
+  if (!visible) return null;
+
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
       <div className="bg-white p-6 w-80 rounded text-center">
@@ -16,3 +23,4 @@ export default function GameResultModal({ score, time, onClose }) {
     </div>
   );
 }
+
