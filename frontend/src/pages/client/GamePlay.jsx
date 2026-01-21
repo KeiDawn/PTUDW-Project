@@ -111,12 +111,12 @@ export default function GamePlay() {
             onHint={() => setShowGuide(true)}
           />
 
-          {showGuide && (
-            <GameGuideModal
-              guide={GAME_GUIDES[game.code]}
-              onClose={() => setShowGuide(false)}
-            />
-          )}
+          <GameGuideModal
+            visible={showGuide}
+            guide={GAME_GUIDES[game.code]}
+            onClose={() => setShowGuide(false)}
+         />
+
 
           <GameResultModal
             visible={engine.state === 'end' && showResult}

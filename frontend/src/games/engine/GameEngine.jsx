@@ -23,6 +23,7 @@ export default function GameEngine({
 
   const canResume = hasSavedGame(gameCode);
 
+  // ESC = save + back
   useKeyboard(
     {
       onBack: () => {
@@ -53,9 +54,11 @@ export default function GameEngine({
     });
   };
 
+  /**
+   * ===== SAVE / RESUME =====
+   */
   const save = () => {
     saveGame(gameCode, {
-      state,
       score,
       time
     });
@@ -65,8 +68,10 @@ export default function GameEngine({
     const saved = loadGame(gameCode);
     if (!saved) return;
 
-    setScore(saved.score);
-    setTime(saved.time);
+
+    // Resume 
+    setScore(saved.score ?? 0);
+    setTime(saved.time ?? 0);
     setState(GAME_STATE.PLAYING);
   };
 
