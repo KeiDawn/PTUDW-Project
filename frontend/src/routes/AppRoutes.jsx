@@ -10,21 +10,29 @@ import AdminRoute from './AdminRoute';
 import Home from '../pages/public/Home';
 import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
+
 import Dashboard from '../pages/client/Dashboard';
 import GamePlay from '../pages/client/GamePlay';
+import Profile from '../pages/client/Profile';
+import UserSearch from '../pages/client/UserSearch';
+import Friends from '../pages/client/Friends';
+import Messages from '../pages/client/Messages';
+import Achievements from '../pages/client/Achievements';
+import Ranking from '../pages/client/Ranking';
+
 import AdminDashboard from '../pages/admin/AdminDashboard';
 
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Public */}
+      {/* ================= PUBLIC ================= */}
       <Route element={<PublicLayout />}>
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
       </Route>
 
-      {/* Client */}
+      {/* ================= CLIENT ================= */}
       <Route
         element={
           <PrivateRoute>
@@ -33,10 +41,16 @@ export default function AppRoutes() {
         }
       >
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="users" element={<UserSearch />} />
+        <Route path="friends" element={<Friends />} />
+        <Route path="messages" element={<Messages />} />
+        <Route path="achievements" element={<Achievements />} />
+        <Route path="ranking" element={<Ranking />} />
         <Route path="games/:id/play" element={<GamePlay />} />
       </Route>
 
-      {/* Admin */}
+      {/* ================= ADMIN ================= */}
       <Route
         element={
           <AdminRoute>
